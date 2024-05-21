@@ -13,7 +13,7 @@
 </template>
 <script setup lang="ts">
 
-import { TimeFrame } from '../pages/RememberThis.vue';
+import { TimeFrame } from '../pages/RememberView.vue';
 import { ManipulateType } from 'dayjs';
 const props = defineProps<{ timeFrame: TimeFrame, onChangeTimeFrame: (timeFrame: TimeFrame) => void }>()
 const updateAmount = (event: Event) => {

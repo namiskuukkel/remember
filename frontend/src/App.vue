@@ -1,13 +1,10 @@
 <template>
   <v-app>
     <v-main>
-      <RememberThis />
+      <RouterView />
     </v-main>
   </v-app>
 </template>
 
 <script setup lang="ts">
-import RememberThis from './pages/RememberThis.vue';
-
-  //
 </script>

@@ -10,5 +10,7 @@ declare module 'vue' {
     CalendarView: typeof import('./src/components/CalendarView.vue')['default']
     EventFilter: typeof import('./src/components/EventFilter.vue')['default']
     RememberThis: typeof import('./src/pages/RememberThis.vue')['default']
+    RouterLink: typeof import('vue-router')['RouterLink']
+    RouterView: typeof import('vue-router')['RouterView']
   }
 }

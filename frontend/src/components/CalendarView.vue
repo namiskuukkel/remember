@@ -26,7 +26,7 @@ dayjs.extend(isSameOrBefore)
 // Enable time to calculation
 dayjs.extend(relativeTime)
 
-import { TimeFrame, CalendarEvent } from '../pages/RememberThis.vue';
+import { TimeFrame, CalendarEvent } from '../pages/RememberView.vue';
 const props = defineProps<{ events: CalendarEvent[], timeFrame: TimeFrame }>()
 
 const shownEvents = computed(() => {
