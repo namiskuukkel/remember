@@ -10,6 +10,7 @@
     "@mdi/font": "6.2.95",
     "axios": "^1.7.1",
     "dayjs": "^1.11.11",
+    "dotenv": "^16.4.5",
     "roboto-fontface": "*",
     "vue": "^3.4.21",
     "vue-router": "4",

@@ -1,7 +1,7 @@
 <template>
   <v-container class="fill-height">
     <v-responsive class="align-centerfill-height mx-auto" max-width="600">
-      <h1>Muistathan...</h1>
+      <h1 class="text-h1">Muistathan...</h1>
       <div class="text-center">
         <EventFilter :timeFrame="timeFrame" :onChangeTimeFrame="setTimeFrame" />
         <CalendarView :events="events" :timeFrame="timeFrame" />
@@ -19,7 +19,7 @@ import EventFilter from '../components/EventFilter.vue'
 import CalendarView from '../components/CalendarView.vue'
 
 const events = ref([])
-axios.get('http://localhost:5000/getCalendars').then((response) => {
+axios.get(`${import.meta.env.VITE_API_URL}/getCalendars`).then((response) => {
   const eventCalendars = response.data
   events.value = eventCalendars.reduce((acc, calendar) => acc.concat(calendar.events), []).map((event) => ({ ...event, ...{ date: dayjs(event.date, 'dd.MM.YYYY') } }))
 }).catch((error) => {

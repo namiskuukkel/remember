@@ -1,0 +1,11 @@
+{
+  "name": "@types/remember",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "types": "index.d.ts",
+  "scripts": {
+  },
+  "author": "",
+  "license": "ISC"
+}

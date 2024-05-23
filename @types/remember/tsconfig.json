@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ESNext",
+    "declaration": true,
+    "declarationMap": true,
+    "rootDir": ".",
+    "composite": true
+  },
+  "include": ["src/**/*"],
+  "references": []
+}

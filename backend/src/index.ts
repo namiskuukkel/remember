@@ -17,12 +17,10 @@ dayjs.extend(isSameOrAfter)
 
 const app = express();
 app.use(cors())
+app.use(express.json());
 
 const port = process.env.PORT || 5000;
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello, TypeScript Express!");
-});
 const serviceAccount: string = require("../remember-423611-591aaeae1709.json");
 
 initializeApp({
@@ -34,6 +32,11 @@ const db = getFirestore();
 app.get("/getCalendars", async (req, res) => {
   const calendarEvents = await db.collection("calendar-events").get();
   return res.json(calendarEvents.docs.map((doc) => doc.data()));
+})
+
+app.get("/getBaseCalendars", async (req, res) => {
+  const calendars = await db.collection("base-calendars").get();
+  return res.json(calendars.docs.map((doc) => doc.data()));
 })
 
 app.post("/addCalendar", async (req, res) => {
@@ -79,7 +82,7 @@ app.post("/addCalendar", async (req, res) => {
       }).filter((event) => dayjs(event.date , 'YYYYMMDD').isSameOrAfter(dayjs()))
       await events_docRef.set({id: eventsId, base_calendar_id: calendarId, events: events})
 
-      return res.json(null);
+      return res.json({name: calendar.name});
     })
     .catch((error) => {
       console.log(error);
