@@ -3,8 +3,7 @@
         <v-container>
             <v-row v-for="event in shownEvents" dense>
                 <v-col cols="12">
-                    <v-card :title="event.countdown" :subtitle="event.name" :text="event.description" :color="event.color">
-                    </v-card>
+                    <EventCard :event="event" />
                 </v-col>
             </v-row>
         </v-container>
@@ -27,6 +26,7 @@ dayjs.extend(isSameOrBefore)
 dayjs.extend(relativeTime)
 
 import { TimeFrame, CalendarEvent } from '../pages/RememberView.vue';
+import EventCard from './EventCard.vue'
 const props = defineProps<{ events: CalendarEvent[], timeFrame: TimeFrame }>()
 
 const shownEvents = computed(() => {

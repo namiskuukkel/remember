@@ -16,7 +16,7 @@ import dayjs, { Dayjs } from 'dayjs'
 import axios from 'axios';
 
 import EventFilter from '../components/EventFilter.vue'
-import CalendarView from '../components/CalendarView.vue'
+import CalendarView from '../components/EventList.vue'
 
 const events = ref([])
 axios.get(`${import.meta.env.VITE_API_URL}/getCalendars`).then((response) => {

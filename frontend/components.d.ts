@@ -7,9 +7,11 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    CalendarView: typeof import('./src/components/CalendarView.vue')['default']
+    CalendarEdit: typeof import('./src/components/CalendarEdit.vue')['default']
+    ColorPicker: typeof import('./src/components/ColorPicker.vue')['default']
+    EventCard: typeof import('./src/components/EventCard.vue')['default']
     EventFilter: typeof import('./src/components/EventFilter.vue')['default']
-    RememberThis: typeof import('./src/pages/RememberThis.vue')['default']
+    EventList: typeof import('./src/components/EventList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
