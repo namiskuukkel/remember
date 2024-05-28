@@ -7,7 +7,9 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AlertPopup: typeof import('./src/components/AlertPopup.vue')['default']
     CalendarEdit: typeof import('./src/components/CalendarEdit.vue')['default']
+    CircularLoader: typeof import('./src/components/CircularLoader.vue')['default']
     ColorPicker: typeof import('./src/components/ColorPicker.vue')['default']
     EventCard: typeof import('./src/components/EventCard.vue')['default']
     EventFilter: typeof import('./src/components/EventFilter.vue')['default']

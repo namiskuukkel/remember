@@ -10,13 +10,13 @@ import {
   Filter,
 } from "firebase-admin/firestore";
 import crypto from "crypto";
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
-import cors from 'cors'
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import cors from "cors";
 
-dayjs.extend(isSameOrAfter)
+dayjs.extend(isSameOrAfter);
 
 const app = express();
-app.use(cors())
+app.use(cors());
 app.use(express.json());
 
 const port = process.env.PORT || 5000;
@@ -30,19 +30,32 @@ initializeApp({
 const db = getFirestore();
 
 app.get("/getCalendars", async (req, res) => {
-  const calendarEvents = await db.collection("calendar-events").get();
-  return res.json(calendarEvents.docs.map((doc) => doc.data()));
-})
+  // TODO: Get only public or permitted
+  const eventCalendars = await db.collection("eventCalendars").get();
+  return res.json(eventCalendars.docs.map((doc) => doc.data()));
+});
 
 app.get("/getBaseCalendars", async (req, res) => {
-  const calendars = await db.collection("base-calendars").get();
+  // TODO: Get only public or permitted
+  const calendars = await db.collection("baseCalendars").get();
   return res.json(calendars.docs.map((doc) => doc.data()));
-})
+});
 
+// TODO: auth
 app.post("/addCalendar", async (req, res) => {
   const url = req.body.url;
   if (!url) {
-    return res.status(400).json({ error: "url is required" });
+    return res.status(400).send("url is required");
+  }
+
+  // TODO: Input sanitation
+  const baseCalendarRef = db.collection("baseCalendars");
+  const baseCalendar = await baseCalendarRef
+    .where("url", "==", url)
+    .where("public", "==", true)
+    .get();
+  if (!baseCalendar.empty) {
+    return res.status(409).send("Calendar with this url is already added");
   }
 
   axios
@@ -52,7 +65,7 @@ app.post("/addCalendar", async (req, res) => {
       const output: ical2json.IcalObject = ical2json.convert(icalCalendarData);
 
       const calendarId = crypto.randomBytes(16).toString("hex");
-      const baseCalendar_docRef = db.collection("base-calendars").doc(calendarId);
+      const baseCalendar_docRef = baseCalendarRef.doc(calendarId);
 
       const icalCalendar = output.VCALENDAR[0] as ical2json.IcalObject;
 
@@ -64,48 +77,66 @@ app.post("/addCalendar", async (req, res) => {
         public: true,
         owner: "remember",
         ical: icalCalendar,
-        locale: 'fi-FI'
+        locale: "fi-FI",
       };
       await baseCalendar_docRef.set(calendar);
 
       const eventsId = crypto.randomBytes(16).toString("hex");
-      const events_docRef = db.collection("calendar-events").doc(eventsId);
-      
-      const events = (icalCalendar["VEVENT"] as ical2json.IcalObject[]).map((event) => ({
-        name: event.SUMMARY,
-        date: event['DTSTART;VALUE=DATE'] as string,
-        description: event.DESCRIPTION,
-      })).sort((eventA, eventB) => {
-        if(eventA.date < eventB.date) return -1
-        if(eventA.date > eventB.date) return 1
-        return 0
-      }).filter((event) => dayjs(event.date , 'YYYYMMDD').isSameOrAfter(dayjs()))
-      await events_docRef.set({id: eventsId, base_calendar_id: calendarId, events: events})
+      const events_docRef = db.collection("eventCalendars").doc(eventsId);
 
-      return res.json({name: calendar.name});
+      const events = (icalCalendar["VEVENT"] as ical2json.IcalObject[])
+        .map((event) => ({
+          name: event.SUMMARY,
+          date: event["DTSTART;VALUE=DATE"] as string,
+          description: event.DESCRIPTION,
+          repeat: event.RRULE || null,
+        })).filter((event) =>
+          dayjs(event.date, "YYYYMMDD").isSameOrAfter(dayjs())
+        ) //Remove past events
+        .sort((eventA, eventB) => {
+          //Order by date
+          if (eventA.date < eventB.date) return -1;
+          if (eventA.date > eventB.date) return 1;
+          return 0;
+        })
+      // TODO: Filtering when past event is recurring?
+
+      await events_docRef.set({
+        id: eventsId,
+        name: calendar.name,
+        baseCalendarId: calendarId,
+        events: events,
+        color: "#FFFFFF",
+      });
+
+      return res.json({ name: calendar.name, id: eventsId, color: "#FFFFFF" });
     })
     .catch((error) => {
       console.log(error);
     });
 });
 
-app.get("/users", async (req, res) => {});
+// TODO: auth
+app.put("/updateCalendar", async (req, res) => {
+  const calendarId = req.body.calendarId;
+  if (!calendarId) {
+    return res.status(400).json({ error: "calendarId is required" });
+  }
+  
+  // TODO: Input sanitation
+  const color = req.body.color;
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  // TODO: Permission to edit
+  const eventCalendarRef = db.collection("eventCalendars").doc(calendarId);
+
+  // Set the new color
+  const updateRes = await eventCalendarRef.update({ color: color });
+
+  console.log(updateRes);
+  return res.status(200).send();
 });
 
-//   id
-// name
-// url
-// lastChecked
-// public
-// events
-// owner
-
-// uid
-// startDate
-// endDate
-// name -> summary
-// lastModified
-// description
+app.listen(port, () => {
+  //TODO: env
+  console.log(`Server running at http://localhost:${port}`);
+});
